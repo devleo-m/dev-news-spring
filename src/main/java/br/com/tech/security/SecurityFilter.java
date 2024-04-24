@@ -1,0 +1,70 @@
+package br.com.tech.security;
+
+import br.com.tech.entity.UsuarioEntity;
+import br.com.tech.repository.UsuarioRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
+@Slf4j
+@Component
+public class SecurityFilter extends OncePerRequestFilter {
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private UsuarioRepository userRepository;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        log.info("Iniciando o filtro de segurança");
+        String token = this.recoverToken(request);
+        if (token != null) {
+            try {
+                String email = tokenService.validateToken(token);
+                log.info("Login validado: {}", email);
+
+                if (email != null) {
+                    UsuarioEntity user = userRepository.findByEmail(email)
+                            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+                    List<GrantedAuthority> authorities = Collections.singletonList(
+                            new SimpleGrantedAuthority("ROLE_" + user.getId_papel().getNome().toUpperCase())
+                    );
+                    log.info("Role do usuário: {}", user.getId_papel().getNome().toUpperCase());
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("Usuário autenticado: {}", user.getEmail());
+                }
+            } catch (Exception e) {
+                log.error("Erro ao processar o token de autenticação", e);
+            }
+        }
+        filterChain.doFilter(request, response);
+        log.info("Filtro de segurança concluído");
+    }
+
+    private String recoverToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        log.info("Cabeçalho de Autorização: {}", authHeader);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+}

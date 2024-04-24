@@ -43,4 +43,7 @@ public class UsuarioEntity implements Serializable{
     @Column(name = "ultimo_login")
     private LocalDateTime ultimoLogin;
 
+    @ManyToOne
+    @JoinColumn(name = "id_papel")
+    private PapelEntity id_papel;
 }

@@ -30,18 +30,16 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UsuarioRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Iniciando o filtro de segurança");
         String token = this.recoverToken(request);
         if (token != null) {
             try {
-                String email = tokenService.validateToken(token);
-                log.info("Login validado: {}", email);
+                String login = tokenService.validateToken(token);
+                log.info("Login validado: {}", login);
 
-                if (email != null) {
-                    UsuarioEntity user = userRepository.findByEmail(email)
+                if (login != null) {
+                    UsuarioEntity user = userRepository.findByEmail(login)
                             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
                     List<GrantedAuthority> authorities = Collections.singletonList(
                             new SimpleGrantedAuthority("ROLE_" + user.getId_papel().getNome().toUpperCase())

@@ -20,22 +20,22 @@ CREATE TABLE IF NOT EXISTS usuario (
 );
 
 -- Criação da tabela artigo
-CREATE TABLE IF NOT EXISTS artigo (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo VARCHAR(255) NOT NULL,
-    conteudo VARCHAR(255) UNIQUE NOT NULL,
-    data_publicacao TIMESTAMP NOT NULL DEFAULT NOW(),
-    resumo VARCHAR(255),
-    tags VARCHAR(255),
-    status VARCHAR(255),
-    id_usuario UUID REFERENCES usuario(id)
-);
+-- CREATE TABLE IF NOT EXISTS artigo (
+--     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--     titulo VARCHAR(255) NOT NULL,
+--     conteudo VARCHAR(255) UNIQUE NOT NULL,
+--     data_publicacao TIMESTAMP NOT NULL DEFAULT NOW(),
+--     resumo VARCHAR(255),
+--     tags VARCHAR(255),
+--     status VARCHAR(255),
+--     id_usuario UUID REFERENCES usuario(id)
+-- );
 
 -- Criação da tabela comentario
-CREATE TABLE IF NOT EXISTS comentario (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    conteudo TEXT NOT NULL,
-    data_comentario TIMESTAMP NOT NULL DEFAULT NOW(),
-    id_usuario UUID REFERENCES usuario(id),
-    id_artigo UUID REFERENCES artigo(id)
-);
+-- CREATE TABLE IF NOT EXISTS comentario (
+--     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--     conteudo TEXT NOT NULL,
+--     data_comentario TIMESTAMP NOT NULL DEFAULT NOW(),
+--     id_usuario UUID REFERENCES usuario(id),
+--     id_artigo UUID REFERENCES artigo(id)
+-- );

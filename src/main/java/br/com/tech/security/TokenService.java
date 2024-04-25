@@ -32,8 +32,7 @@ public class TokenService {
 
     public String validateToken(String token) {
         if (token == null) {
-            log.info("Token de validação é nulo");
-            return null;
+            throw new IllegalArgumentException("Token de validação é nulo");
         }
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -42,8 +41,7 @@ public class TokenService {
                     .build();
             return verifier.verify(token).getSubject();
         } catch (JWTVerificationException exception) {
-            log.error("Erro ao verificar token", exception);
-            return null;
+            throw new RuntimeException("Erro ao verificar token", exception);
         }
     }
 

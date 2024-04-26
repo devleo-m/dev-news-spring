@@ -32,10 +32,10 @@ CREATE TABLE IF NOT EXISTS artigo (
 );
 
 -- Criação da tabela comentario
--- CREATE TABLE IF NOT EXISTS comentario (
---     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
---     conteudo TEXT NOT NULL,
---     data_comentario TIMESTAMP NOT NULL DEFAULT NOW(),
---     id_usuario UUID REFERENCES usuario(id),
---     id_artigo UUID REFERENCES artigo(id)
--- );
+CREATE TABLE IF NOT EXISTS comentario (
+    id BIGSERIAL PRIMARY KEY,
+    conteudo TEXT NOT NULL,
+    data_comentario TIMESTAMP NOT NULL DEFAULT NOW(),
+    id_usuario UUID REFERENCES usuario(id),
+    id_artigo BIGINT REFERENCES artigo(id)
+);

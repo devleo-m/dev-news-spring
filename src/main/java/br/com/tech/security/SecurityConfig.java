@@ -33,11 +33,19 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/cadastrar").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/artigos").permitAll() // Todos podem ler os artigos
+                        .requestMatchers(HttpMethod.POST, "/artigos").hasAnyRole("ADMIN", "ESCRITOR")
+                        .requestMatchers(HttpMethod.PUT, "/artigos").hasAnyRole("ADMIN", "ESCRITOR")
+
+                        .requestMatchers(HttpMethod.GET, "/comentarios").hasAnyRole("ADMIN", "ESCRITOR", "CLIENTE")
+                        .requestMatchers(HttpMethod.POST, "/comentarios").hasAnyRole("ADMIN", "ESCRITOR", "CLIENTE")
+                        .requestMatchers(HttpMethod.PUT, "/comentarios").hasAnyRole("ADMIN", "ESCRITOR", "CLIENTE")
+                        .requestMatchers(HttpMethod.DELETE, "/comentarios").hasAnyRole("ADMIN", "ESCRITOR", "CLIENTE")
+
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
